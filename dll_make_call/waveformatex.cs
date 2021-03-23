@@ -17,8 +17,11 @@
 using System;
 using System.Runtime.InteropServices;
 
-internal struct win32_make_and_call {
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+namespace dbj
+{
+    internal struct win32_make_and_call
+    {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct WAVEFORMATEX
         {
             public ushort wFormatTag;
@@ -31,23 +34,30 @@ internal struct win32_make_and_call {
         }
 
         [DllImport(@"myfun.dll", EntryPoint = "myFun")]
-        static extern int myFun(
-            out WAVEFORMATEX wfx
-        );
+        static extern int myFun( out WAVEFORMATEX wfx );
 
         public static void example()
         {
             WAVEFORMATEX wfx;
-            int result = myFun(out wfx);
-            Console.WriteLine(result);
-            Console.WriteLine(wfx.cbSize);
-            Console.WriteLine(wfx.nAvgBytesPerSec);
-            Console.WriteLine(wfx.nBlockAlign);
-            Console.WriteLine(wfx.nChannels);
-            Console.WriteLine(wfx.nSamplesPerSec);
-            Console.WriteLine(wfx.wBitsPerSample);
-            Console.WriteLine(wfx.wFormatTag);
+            try
+            {
+                int result = myFun(out wfx);
+                Console.WriteLine(result);
+                Console.WriteLine(wfx.cbSize);
+                Console.WriteLine(wfx.nAvgBytesPerSec);
+                Console.WriteLine(wfx.nBlockAlign);
+                Console.WriteLine(wfx.nChannels);
+                Console.WriteLine(wfx.nSamplesPerSec);
+                Console.WriteLine(wfx.wBitsPerSample);
+                Console.WriteLine(wfx.wFormatTag);
 
-            Console.ReadLine();
+                // Console.ReadLine();
+            }
+            catch (System.DllNotFoundException x)
+            {
+                dbj.notmacros.Log(x);
+            }
         }
+    } // dbj
+
 } // dbj

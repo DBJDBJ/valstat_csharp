@@ -1,10 +1,14 @@
-﻿using System ;
-					
-public class Program
+﻿using System;
+
+namespace dbj
 {
-	public static void Main()
-	{
-        field_user.use() ;
-        dbj.example();
-	}
-}
+    public class Program
+    {
+        public static void Main()
+        {
+			whatever.runtime_nullable();
+            field_user.use();
+            win32_make_and_call.example();
+        }
+    }
+} // dbj
