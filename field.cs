@@ -2,21 +2,28 @@
 /*
 (c) 2021 by dbj@dbj.org -- https://dbj.org/license_dbj
 
-                    +------------+
-                    |            |
-                    |   IField   |
-                    |            |
-                    +------+-----+
-                           ^
-                           |
-          +----------------+---------------+
-          |                                |
+                                               +-------------------------+
+                    +------------+             |                         |
+                    |            +<------------+     Valstat<VT,ST>      |
+                    |   IField   |             |                         |
+                    |   empty    |             |  IField val_            |
+                    +------+-----+             |  IField stat_           |
+                           ^                   |  VT? { get; set; }      |
+                           |                   |  ST? { get; set; }      |
+          +----------------+---------------+   |                         |
+          |                                |   +-------------------------+
           |                                |
 +---------+---------+           +----------+--------+
 |                   |           |                   |
 |  EmptyField<T>    |           |     Field<T>      |
 |                   |           |                   |
+|  empty : true     |           |  empty : false    |
+|                   |           |  data { get; set;}|
 +-------------------+           +-------------------+
+
+IField : property `empty` reveals the identity of the implementation
+Valstat: First set changes the val_ or stat_ identity from EmptyField<> to Field<>
+`data` property uses the val_ or stat_ data only if not empty
 
 */
 using System;
