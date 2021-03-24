@@ -31,32 +31,18 @@ namespace dbj
         public bool empty { get; }
     }
 
-    public interface IDataField<T> : IField
-    {
-        public T data { get; set; }
-    }
-
     public struct EmptyField<T> : IField
     {
         public bool empty { get => true; }
 
-        public override string ToString() => this.GetType().Name + " { empty:" + empty + ", no data }";
+        public override string ToString() => this.GetType().Name + " { empty:" + empty + ", data : empty }";
     }
 
-    public record Field<T> : IDataField<T>
+    public record Field<T> : IField
     {
         public bool empty { get => false; }
 
         public T data { get; set; }
-
-        // public IField field
-        // {
-        //     get
-        //     {
-        //         if (empty) return new EmptyField<T>();
-        //         return this;
-        //     }
-        // }
 
         // record can have default ctors
         // struct can not
@@ -81,7 +67,7 @@ namespace dbj
             Log("value field: {0} ", value);
             value = new Field<int>(42);
             // 
-            IDataField<int> data_field = (Field<int>)value;
+            var data_field = (Field<int>)value;
             // Field<int> occupied =  (Field<int>)value ;
             Log("value field: {0}", data_field);
         }
@@ -96,7 +82,6 @@ namespace dbj
                   val_ = new Field<VT>();
             }
             ((Field<VT>)val_).data = value ?? default ;
-            // val = ((Field<VT>)val_).data ;
         } 
         }
         private IField stat_ = new EmptyField<ST>() ;
@@ -107,7 +92,6 @@ namespace dbj
                   stat_ = new Field<ST>();
             }
            ((Field<ST>)stat_).data = value ?? default ;
-            // stat = ((Field<ST>)stat_).data ;
         }  
         }
 
@@ -122,13 +106,23 @@ namespace dbj
 
     public struct actual_valstat_user
     {
+        static Valstat<V,S> make<V,S>()
+        {
+            return new Valstat<V,S>();
+        }
+
+        static void driver<V,S >( V v_, S s_ )
+        {
+            var vs = make<V,S>();
+            Log("vs: {0}\n", vs); 
+            vs.val  = v_ ;
+            vs.stat = s_ ;
+            Log("vs: {0}\n", vs); 
+        }
         public static void does ()
         {
-            var vs = new Valstat<int,int>();
-            Log("vs: {0}\n", vs); 
-            vs.val  = 13 ;
-            vs.stat = 42 ;
-            Log("vs: {0}\n", vs); 
+            driver(13,42);
+            driver("Mama","Tata");
         }
     } // actual_valstat_user {}
 
