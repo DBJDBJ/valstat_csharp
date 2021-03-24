@@ -1,5 +1,6 @@
 // https://stackoverflow.com/a/19831653/10870835
 using System;
+using static dbj.notmacros ;
 
 public record runtime_nullable<T>
 {
@@ -47,7 +48,7 @@ struct whatever
         }
         catch (InvalidOperationException x)
         {
-            dbj.notmacros.Log("Exception: {0} ", x);
+            Log("Exception: {0} ", x);
         }
     }
 }
