@@ -1,5 +1,8 @@
-/bin
-/obj
-.vs
+bin/
+obj/
+.vs/
+.git/
 *.exp
 *.obj
+*.user
+*.suo
