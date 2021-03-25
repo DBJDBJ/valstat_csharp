@@ -16,6 +16,7 @@
 // }
 using System;
 using System.Runtime.InteropServices;
+using static dbj.notmacros;
 
 namespace dbj
 {
@@ -34,7 +35,7 @@ namespace dbj
         }
 
         [DllImport(@"myfun.dll", EntryPoint = "myFun")]
-        static extern int myFun( out WAVEFORMATEX wfx );
+        static extern int myFun(out WAVEFORMATEX wfx);
 
         public static void example()
         {
@@ -55,7 +56,7 @@ namespace dbj
             }
             catch (System.DllNotFoundException x)
             {
-                dbj.notmacros.Log(x);
+                Log(x);
             }
         }
     } // dbj

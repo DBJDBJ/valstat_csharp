@@ -35,25 +35,16 @@ namespace dbj
             return val_.Equals(default(T));
         }
 
-        // REDUNDANT / LEGACY
-        // valstat as anonymous type instance made of two fields
-        // val and stat
-        // the type of val or stat is not mandated
-        // it depends on the context
-        // valstat is actualy a function returing a tuple
-        // object valstat_make<VT,ST> ( VT? v_, ST? s_) {
-        //    return new { val = v_ ?? default, stat = s_ ?? default };
-        // }
-
         // valstat structure is C#7 tuple
-    static (int? val, string? stat) valstat_api( int state )
+        static (int? val, string? stat) valstat_api(int state)
         {
-            switch(state){
+            switch (state)
+            {
                 case 0: return (null, "0xFF");
                 case 1: return (1234, "0xFF");
-                case 2: return (1234,  null );
+                case 2: return (1234, null);
             }
-            return ( null, null );
+            return (null, null);
         }
 
         public static void doesit()
@@ -64,9 +55,9 @@ namespace dbj
             var (val, stat) = valstat_api(0);
             var (x, y) = valstat_api(1);
             var pair = valstat_api(2);
-            Log("pair: {0}", pair );
-            var v_ = pair.val ;
-            var s_ = pair.stat ;
+            Log("pair: {0}", pair);
+            var v_ = pair.val;
+            var s_ = pair.stat;
         }
 
         #region SO inspiration

@@ -82,54 +82,61 @@ namespace dbj
 
     public record Valstat<VT, ST>
     {
-        private IField val_ = new EmptyField<VT>() ;
-        public VT? val { get => ( val_.empty ? default : ((Field<VT>)val_).data) ; 
-        set {
-            if (val_.empty ){
-                  val_ = new Field<VT>();
+        private IField val_ = new EmptyField<VT>();
+        public VT? val
+        {
+            get => (val_.empty ? default : ((Field<VT>)val_).data);
+            set
+            {
+                if (val_.empty)
+                {
+                    val_ = new Field<VT>();
+                }
+                ((Field<VT>)val_).data = value ?? default;
             }
-            ((Field<VT>)val_).data = value ?? default ;
-        } 
         }
-        private IField stat_ = new EmptyField<ST>() ;
-        public ST? stat { 
-            get => ( stat_.empty ? default : ((Field<ST>)stat_).data ) ; 
-           set{
-            if (stat_.empty ){
-                  stat_ = new Field<ST>();
+        private IField stat_ = new EmptyField<ST>();
+        public ST? stat
+        {
+            get => (stat_.empty ? default : ((Field<ST>)stat_).data);
+            set
+            {
+                if (stat_.empty)
+                {
+                    stat_ = new Field<ST>();
+                }
+            ((Field<ST>)stat_).data = value ?? default;
             }
-           ((Field<ST>)stat_).data = value ?? default ;
-        }  
         }
 
         public override string ToString()
         {
-            var thistypename = this.GetType().Name ;
-            var val_str = val_.ToString()  ;
-            var stt_str = stat_.ToString() ;
+            var thistypename = this.GetType().Name;
+            var val_str = val_.ToString();
+            var stt_str = stat_.ToString();
             return thistypename + " { value:" + val_str + ", status:" + stt_str + " }";
         }
     } // Valstat<VT,ST>
 
     public struct actual_valstat_user
     {
-        static Valstat<V,S> make<V,S>()
+        static Valstat<V, S> make<V, S>()
         {
-            return new Valstat<V,S>();
+            return new Valstat<V, S>();
         }
 
-        static void driver<V,S >( V v_, S s_ )
+        static void driver<V, S>(V v_, S s_)
         {
-            var vs = make<V,S>();
-            Log("vs: {0}\n", vs); 
-            vs.val  = v_ ;
-            vs.stat = s_ ;
-            Log("vs: {0}\n", vs); 
+            var vs = make<V, S>();
+            Log("vs: {0}\n", vs);
+            vs.val = v_;
+            vs.stat = s_;
+            Log("vs: {0}\n", vs);
         }
-        public static void does ()
+        public static void does()
         {
-            driver(13,42);
-            driver("Mama","Tata");
+            driver(13, 42);
+            driver("Mama", "Tata");
         }
     } // actual_valstat_user {}
 
@@ -163,19 +170,19 @@ namespace dbj
         {
             Valstat<VT, ST> vst = new Valstat<VT, ST>();
 
-            Console.WriteLine("\n Valstat< {0}, {1} > : {2}\n",
+            Log("\n Valstat< {0}, {1} > : {2}\n",
             typeof(VT), typeof(ST), vst
             );
-            Console.WriteLine("\n value_empty : {0}, status_empty : {1}\n",
+            Log("\n value_empty : {0}, status_empty : {1}\n",
             vst.value_empty(), vst.status_empty(), vst
             );
 
             Valstat<VT, ST> vst2 = new Valstat<VT, ST>(v_, s_);
 
-            Console.WriteLine("\n Valstat< {0}, {1} > : {2}\n",
+            Log("\n Valstat< {0}, {1} > : {2}\n",
             typeof(VT), typeof(ST), vst2
             );
-            Console.WriteLine("\n value_empty : {0}, status_empty : {1}\n",
+            Log("\n value_empty : {0}, status_empty : {1}\n",
             vst.value_empty(), vst.status_empty(), vst2
             );
         }

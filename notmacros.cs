@@ -12,7 +12,10 @@ namespace dbj
         public static unsafe void Log(object message)
         {
 #if DEBUG
+            // Console.BackgroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(message);
+            Console.ResetColor();
 #endif
         }
 
@@ -25,10 +28,29 @@ namespace dbj
         public static unsafe void Log(string format, params object[] args)
         {
 #if DEBUG
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(format, args);
+            Console.ResetColor();
 #endif
         }
 
+        /// <summary>
+        /// Prints a formatted exception message when in debug mode
+        /// </summary>
+        /// <param name="format">A composite format string</param>
+        /// <param name="args">An array of objects to write using format</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void Log(System.Exception x_)
+        {
+#if DEBUG
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Exception!");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(x_.Message);
+            Console.ResetColor();
+#endif
+        }
         /// <summary>
         /// Computes the square of a number
         /// </summary>
