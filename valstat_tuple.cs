@@ -9,47 +9,87 @@ namespace dbj
 
     internal partial class test
     {
-        // cast object arg1 to type of arg2
-        // usage:
-        // IShape s_ = cast<IShape>(square);
-        // or much more significantly
-        // declare and define  the anonymous type
-        // var data_ = cast(new { data = 42 }, new { data = default(int); });
-        public static T cast<T>(object obj, T t = default)
+        enum valstat_state
         {
-            // can throw System.InvalidCastException
-            return (T)obj;
+            OK, ERROR, INFO, EMPTY
         }
-
-        // we will consider value 'empty' if 
-        // it is equal to default value of its type
-        public static bool is_empty<T>(T val_)
-        {
-            return val_.Equals(default(T));
-        }
-
+        // there is no valstat structure, class or record
         // valstat structure is C#7 tuple
-        static (int? val, string? stat) valstat_api(int state)
+        static (int? val, string? stat) valstat_maker(valstat_state state)
         {
             switch (state)
             {
-                case 0: return (null, "0xFF");
-                case 1: return (1234, "0xFF");
-                case 2: return (1234, null);
+                case valstat_state.ERROR: return (null, "0xFF");    // ERROR state
+                case valstat_state.INFO: return (1234, "0xFF");     // INFO state
+                case valstat_state.OK: return (1234, null);         // OK state
             }
-            return (null, null);
+            return (null, null);                                    // EMPTY state
         }
+
+        // perform safe division of two longs
+        // and return the 
+        // value narrowed to UInt32
+        // return valstat protocol structure as C# tuple
+        static public (UInt32? value, string? status)
+            safe_divide(decimal numerator, decimal divisor)
+        {
+            if (numerator > UInt32.MaxValue)
+                return (null, "Error: numerator > uint32 max");
+
+            if (numerator < 0)
+                return (null, "Error: numerator < 0");
+
+            if (divisor > UInt32.MaxValue)
+                return (null, "Error: divisor > uint32 max");
+
+            if (divisor < 0)
+                return (null, "Error: divisor < 0");
+
+            if (divisor == 0)
+                return (null, "Error: divisor is 0");
+
+            try
+            {
+                return ((UInt32)(numerator / divisor), null);
+            }
+            catch (System.Exception x)
+            {
+                return (null, x.Message);
+            }
+        }
+
+        static void test_driver(long a, long b)
+        {
+            var (val, stat) = safe_divide(a, b);
+
+            Log("\nsafe_divide({0},{1}) returned ", a, b);
+
+            if (val is not null)
+            {
+                Log("\trezult : {0}", val);
+            }
+
+            if (stat is not null)
+            {
+                Log("\tstatus : {0}", stat);
+            }
+        }
+
         public static void test_tuple_valstat()
         {
-            // declaration/creation
-            var p1 = (13, 42);
-            // consumation variants
-            var (val, stat) = valstat_api(0);
-            var (x, y) = valstat_api(1);
-            var pair = valstat_api(2);
-            Log("pair: {0}", pair);
-            var v_ = pair.val;
-            var s_ = pair.stat;
+            test_driver(42, 13);
+            test_driver(42, 0);
+            test_driver(long.MaxValue, 0);
+        }
+        public static void test_quick_tuple_valstat()
+        {
+            // tuple declaration/creation
+            Log((13, 42));
+            // valstat consumation variants
+            var (val, stat) = valstat_maker(valstat_state.OK);
+            var (x, y) = valstat_maker(valstat_state.ERROR);
+            var pair = valstat_maker(valstat_state.INFO);
+            Log(pair);
         }
     }
 }// internal partial class test

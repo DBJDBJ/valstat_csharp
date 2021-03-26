@@ -99,5 +99,34 @@ namespace dbj
                 }
             }
         }
+
+        /// <summary>
+        /// cast object arg1 to type of arg2
+        /// usage:
+        /// give type explicitly
+        /// IShape s_ = cast<IShape>(square);
+        /// or
+        /// declare and define to the type of the secon argument
+        /// var data_ = cast( 42 , new decimal() );
+        /// </summary>
+        /// <param name="obj">object to cast</param>
+        /// <param name="offset">optional cast to this arg type</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T cast<T>(object obj, T t = default)
+        {
+            // can throw System.InvalidCastException
+            return (T)obj;
+        }
+
+        /// <summary>
+        /// consider value 'empty' if it is null
+        /// </summary>
+        /// <param name="val_">value to be tested</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool is_empty<T>(T val_)
+        {
+            if (val_ is null) return true;
+            return false;
+        }
     } // notmacros
 } // dbj
