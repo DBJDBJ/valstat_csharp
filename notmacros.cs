@@ -13,7 +13,7 @@ namespace dbj
         {
 #if DEBUG
             // Console.BackgroundColor = ConsoleColor.Blue;
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(message);
             Console.ResetColor();
 #endif
@@ -28,8 +28,16 @@ namespace dbj
         public static unsafe void Log(string format, params object[] args)
         {
 #if DEBUG
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(format, args);
+            if (args.Length < 1)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(format);
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(format, args);
+            }
             Console.ResetColor();
 #endif
         }
@@ -44,8 +52,10 @@ namespace dbj
         {
 #if DEBUG
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Exception!");
+            Console.WriteLine("\nException!");
+            Console.WriteLine(x_.StackTrace);
             Console.ResetColor();
+            Console.WriteLine("\n");
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(x_.Message);
             Console.ResetColor();

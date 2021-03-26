@@ -1,3 +1,4 @@
+// #define LEGACY
 #nullable enable
 // https://github.com/dotnet/roslyn/blob/main/docs/features/tuples.md
 using System;
@@ -5,16 +6,8 @@ using static dbj.notmacros;
 
 namespace dbj
 {
-    // https://stackoverflow.com/q/54577827/10870835
-    public class Result<T, E>
-    {
-        public Result(T data) => Ok = (true, data);
-        public Result(E data) => Error = (true, data);
-        public (bool, T) Ok { get; }
-        public (bool, E) Error { get; }
-    } // Result
 
-    record valstat_tuple
+    internal partial class test
     {
         // cast object arg1 to type of arg2
         // usage:
@@ -46,8 +39,7 @@ namespace dbj
             }
             return (null, null);
         }
-
-        public static void doesit()
+        public static void test_tuple_valstat()
         {
             // declaration/creation
             var p1 = (13, 42);
@@ -59,8 +51,11 @@ namespace dbj
             var v_ = pair.val;
             var s_ = pair.stat;
         }
+    }
+}// internal partial class test
 
-        #region SO inspiration
+#if LEGACY
+#region SO inspiration -- LEGACY BEFORE TUPLES -- PLAYGROUND ONLY
 
         private static void foo()
         {
@@ -91,6 +86,5 @@ namespace dbj
         {
             foo();
         }
-        #endregion
-    }
-}
+#endregion
+#endif

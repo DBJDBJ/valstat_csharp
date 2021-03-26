@@ -20,7 +20,7 @@ using static dbj.notmacros;
 
 namespace dbj
 {
-    internal struct win32_make_and_call
+    internal partial class test
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct WAVEFORMATEX
@@ -37,7 +37,7 @@ namespace dbj
         [DllImport(@"myfun.dll", EntryPoint = "myFun")]
         static extern int myFun(out WAVEFORMATEX wfx);
 
-        public static void example()
+        public static void test_dll_call()
         {
             WAVEFORMATEX wfx;
             try
@@ -59,6 +59,6 @@ namespace dbj
                 Log(x);
             }
         }
-    } // dbj
+    } //test class
 
 } // dbj

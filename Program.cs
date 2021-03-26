@@ -1,27 +1,22 @@
-﻿using System;
+﻿// This is C#9, we have established that fact ...
+// #define LEGACY
+#nullable enable
+using System;
 using static dbj.notmacros;
+using static dbj.test;
 
-namespace dbj
+try
 {
-    public class Program
-    {
-        public static void Main()
-        {
-            try
-            {
-                valstat_tuple.doesit();
-                valstat_tuple.test();
-                whatever.runtime_nullable();
-                actual_valstat_user.does();
-                field_user.test();
-                valstat_user.use();
-                win32_make_and_call.example();
+    //test_simple_valstat();
+    //result_test();
+    test_valstat_with_fields();
+    //test_field();
+    //test_tuple_valstat();
+    //test_runtime_nullable();
+    //test_dll_call();
+}
+catch (System.Exception x)
+{
+    Log(x);
+}
 
-            }
-            catch (System.Exception x)
-            {
-                Log(x);
-            }
-        }
-    }
-} // dbj
