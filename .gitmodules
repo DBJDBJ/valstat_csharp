@@ -1,0 +1,3 @@
+[submodule "valstat_dll"]
+	path = valstat_dll
+	url = https://github.com/DBJDBJ/valstat_dll.git
