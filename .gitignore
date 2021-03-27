@@ -2,6 +2,7 @@ bin/
 obj/
 .vs/
 .git/
+x64/
 *.exp
 *.obj
 *.user

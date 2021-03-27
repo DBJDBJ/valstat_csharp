@@ -7,9 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\valstat_dll\valstat_dll.vcxproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="dll_make_call\myfun.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="x64\Debug\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\Debug\net5.0\valstat_dll.dll" />
+    <None Include="bin\Debug\net5.0\valstat_dll.exp" />
+    <None Include="bin\Debug\net5.0\valstat_dll.ilk" />
+    <None Include="bin\Debug\net5.0\valstat_dll.lib" />
+    <None Include="bin\Debug\net5.0\valstat_dll.pdb" />
   </ItemGroup>
 
 </Project>

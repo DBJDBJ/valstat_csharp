@@ -33,27 +33,34 @@ namespace dbj
             public ushort nBlockAlign;
             public ushort wBitsPerSample;
             public ushort cbSize;
+
+            public override string ToString()
+            {
+                return this.GetType().FormattedName()
+                        + $"\n{nameof(wFormatTag)} \t: {wFormatTag.ToString()}"
+                        + $"\n{nameof(nChannels)} \t: {nChannels.ToString()}"
+                        + $"\n{nameof(nSamplesPerSec)} \t: {nSamplesPerSec.ToString()}"
+                        + $"\n{nameof(nAvgBytesPerSec)} : {nAvgBytesPerSec.ToString()}"
+                        + $"\n{nameof(nBlockAlign)} \t: {nBlockAlign.ToString()}"
+                        + $"\n{nameof(wBitsPerSample)} \t: {wBitsPerSample.ToString()}"
+                        + $"\n{nameof(cbSize)} \t\t: {cbSize.ToString()}";
+            }
+
+            // C# should generate pretty decent
+            // ToString() here, but it did not
         }
 
-        [DllImport(@"myfun.dll", EntryPoint = "waveformat")]
-        static extern int waveformat(out WAVEFORMATEX wfx);
+        [DllImport(@"valstat_dll.dll", EntryPoint = "waveformat")]
+        static extern Int32 waveformat(out WAVEFORMATEX wfx);
 
         public static void test_dll_call()
         {
             WAVEFORMATEX wfx;
             try
             {
-                int result = waveformat(out wfx);
+                var result = waveformat(out wfx);
                 Console.WriteLine(result);
-                Console.WriteLine(wfx.cbSize);
-                Console.WriteLine(wfx.nAvgBytesPerSec);
-                Console.WriteLine(wfx.nBlockAlign);
-                Console.WriteLine(wfx.nChannels);
-                Console.WriteLine(wfx.nSamplesPerSec);
-                Console.WriteLine(wfx.wBitsPerSample);
-                Console.WriteLine(wfx.wFormatTag);
-
-                // Console.ReadLine();
+                Console.WriteLine(wfx);
             }
             catch (System.DllNotFoundException x)
             {
