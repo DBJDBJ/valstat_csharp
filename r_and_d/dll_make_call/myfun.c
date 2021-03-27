@@ -30,7 +30,7 @@
 		static extern int myFun(out WAVEFORMATEX wfx);
 */
 __declspec(dllexport)
-int myFun(void* const pWaveFormatex)
+int waveformat(void* const pWaveFormatex)
 {
 	WAVEFORMATEX wfx = {
 	.cbSize = 1,
@@ -43,8 +43,12 @@ int myFun(void* const pWaveFormatex)
 	};
 
 #ifdef _DEBUG
+// to observe from debugger
 	WAVEFORMATEX* wfxp_ = (WAVEFORMATEX*)pWaveFormatex;
 	(void)wfxp_;
 #endif
 	return memcpy(pWaveFormatex, &wfx, sizeof(wfx));
 }
+
+///////////////////////////////////////////////////////////////////
+/// https://stackoverflow.com/a/47648504/10870835

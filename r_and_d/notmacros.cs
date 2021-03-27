@@ -1,13 +1,79 @@
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace dbj
 {
+    public static class extension
+    {
+        /// <summary>
+        /// https://stackoverflow.com/a/66604069/10870835
+        /// </summary>
+        ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string FormattedName(this Type type)
+        {
+            if (type.IsGenericType)
+            {
+                string genericArguments = type.GetGenericArguments()
+                                    .Select(x => x.Name)
+                                    .Aggregate((x1, x2) => $"{x1}, {x2}");
+                return $"{type.Name.Substring(0, type.Name.IndexOf("`"))}"
+                        + $"<{genericArguments}>";
+            }
+            return type.Name;
+        }
+        /// <summary>
+        ///https://dbj.org/license_dbj
+        /// </summary>
+        ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int MAX_STRING_SIZE(this string self)
+        {
+            return 0xFFFF; // aka 65535
+        }
+
+        /// <summary>
+        ///https://stackoverflow.com/a/50746368/10870835
+        /// </summary>
+        ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToLength(this string self, UInt32 length)
+        {
+            if (self == null) return null;
+
+            if (length > self.MAX_STRING_SIZE())
+                throw new System.ArgumentOutOfRangeException("length > MAX_STRING_SIZE");
+
+            return self.Length > length ? self.Substring(0, (int)length) : self.PadRight((int)length);
+        }
+    } // extension
+
     public struct notmacros
     {
+
+        /// <summary>
+        /// the all small letters assert ;)
+        /// </summary>
+        /// <param name="condition">result of boolean expression </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void assert(bool condition_)
+        {
+            // has effect only in debug builds
+            Debug.Assert(condition_);
+        }
+
+        /// <summary>
+        /// make string bufer of required size
+        /// </summary>
+        /// <param name="size_">required size, default is 1024, max is MAX_STRING_SIZE as defined in here. </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string make_buffer(UInt32 size_ = 1024)
+        {
+            return " ".ToLength(size_);
+        }
         /// <summary>
         /// Prints a message when in debug mode
         /// </summary>
+        /// <param name="message">object whose ToStrng() will be used</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Log(object message)
         {
@@ -52,12 +118,15 @@ namespace dbj
         {
 #if DEBUG
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("\nException!");
-            Console.WriteLine(x_.StackTrace);
-            Console.ResetColor();
-            Console.WriteLine("\n");
+            Console.WriteLine("\nException!\t");
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(x_.Message);
+            Console.Write("{0}", x_.GetType().FormattedName());
+            Console.ResetColor();
+            Console.WriteLine("\nStack trace:\t");
+            Console.Write(x_.StackTrace);
+            Console.WriteLine("\nMessage:\t");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(x_.Message);
             Console.ResetColor();
 #endif
         }

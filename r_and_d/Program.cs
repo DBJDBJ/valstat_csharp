@@ -10,6 +10,8 @@ try
     // not possible before C#9 (2020)
     int? specimen = true ? 42 : null;
 
+    test_few_os_dlls();
+
     //test_simple_valstat();
     //result_test();
     // test_valstat_with_fields();
