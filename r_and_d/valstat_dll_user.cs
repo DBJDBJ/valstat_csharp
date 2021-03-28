@@ -1,9 +1,6 @@
-
-// https://stackoverflow.com/a/20597406/10870835
-// that was VERY WRONG so I had to re-act (laugh)
-
+#nullable enable
 // 
-// here is how to allocare and free from C#
+// here is how to allocate and free for C# interop
 //
 // string smMsg = "whatever" ;
 // var len = Marshal.SizeOf(typeof(smMsg));
@@ -17,6 +14,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Text;
 using static dbj.notmacros;
 
 namespace dbj
@@ -34,6 +32,9 @@ namespace dbj
             public ushort wBitsPerSample;
             public ushort cbSize;
 
+            // C# should generate pretty decent
+            // ToString() here, but it did not
+            // ditto ...
             public override string ToString()
             {
                 return this.GetType().FormattedName()
@@ -46,14 +47,23 @@ namespace dbj
                         + $"\n{nameof(cbSize)} \t\t: {cbSize.ToString()}";
             }
 
-            // C# should generate pretty decent
-            // ToString() here, but it did not
         }
+        /*
+         no you can not do this in C# ...
 
-        [DllImport(@"C:\Users\dusan\source\repos\valstat_csharp\valstat_dll\x64\Debug\valstat_dll.dll", EntryPoint = "waveformat")]
+        #define VALSTAT_DLL_FULL_PATH @"D:\DEVL\GITHUB\DBJDBJ\valstat_dll\x64\Debug\valstat_dll.dll"
+
+         */
+#if DEBUG
+        [DllImport(@"D:\DEVL\GITHUB\DBJDBJ\valstat_dll\x64\Debug\valstat_dll.dll"
+            , EntryPoint = "compiler_string", CharSet = CharSet.Unicode, ExactSpelling = true)]
+#else
+        [DllImport(@"D:\DEVL\GITHUB\DBJDBJ\valstat_dll\x64\Release\valstat_dll.dll"
+            , EntryPoint = "compiler_string", CharSet = CharSet.Unicode, ExactSpelling = true)]
+#endif
         static extern Int32 waveformat(out WAVEFORMATEX wfx);
 
-        public static void test_dll_call()
+        public static void test_waveformat_from_dll()
         {
             WAVEFORMATEX wfx;
             try
@@ -67,6 +77,37 @@ namespace dbj
                 Log(x);
             }
         }
+
+        // https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
+
+#if DEBUG
+        [DllImport(@"D:\DEVL\GITHUB\DBJDBJ\valstat_dll\x64\Debug\valstat_dll.dll"
+            , EntryPoint = "compiler_string", CharSet = CharSet.Unicode, ExactSpelling = true)]
+#else
+        [DllImport(@"D:\DEVL\GITHUB\DBJDBJ\valstat_dll\x64\Release\valstat_dll.dll"
+            , EntryPoint = "compiler_string", CharSet = CharSet.Unicode, ExactSpelling = true)]
+#endif
+        static extern Int32 compiler_string([Out] char[] string_, Int32 string_length_);
+
+        public static void test_compiler_string_from_dll()
+        {
+            try
+            {
+                char[] buf_ = new char[128];
+                compiler_string(buf_, 128);
+                Log("\nCompiler used to build that dll is: {0}\n", to_string(buf_));
+            }
+            catch (System.AccessViolationException x)
+            {
+                Log(x);
+            }
+        }
+
+    } //test class
+} // dbj
+/*
+#region deprecated
+
         // https://stackoverflow.com/a/47648504/10870835
         // note: use a struct, not a class, so that
         // you can call Marshal.PtrToStructure.
@@ -98,7 +139,6 @@ namespace dbj
             public string lpServiceStartName;
             public string lpDisplayName;
         };
-
         // return type is a bool, no need for an int here
         // user SetLastError when the doc says so
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -171,8 +211,6 @@ namespace dbj
                 if (bufy != IntPtr.Zero) Marshal.FreeHGlobal(bufy);
             }
         }
-
-
-    } //test class
-
-} // dbj
+#endregion
+ 
+ */

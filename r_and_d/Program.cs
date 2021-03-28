@@ -8,9 +8,10 @@ using static dbj.test;
 try
 {
     // not possible before C#9 (2020)
-    int? specimen = true ? 42 : null;
+    // int? specimen = true ? 42 : null;
 
-    test_dll_call();
+    test_compiler_string_from_dll();
+    test_waveformat_from_dll();
     // test_few_os_dlls();
 
     //test_simple_valstat();

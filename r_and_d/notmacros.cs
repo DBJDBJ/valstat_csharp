@@ -8,6 +8,15 @@ namespace dbj
     public static class extension
     {
         /// <summary>
+        /// https://stackoverflow.com/a/55148881/10870835
+        /// </summary>
+        ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int index_of<T>(this T[] array, T value)
+        {
+            return Array.IndexOf(array, value);
+        }
+
+        /// <summary>
         /// https://stackoverflow.com/a/66604069/10870835
         /// </summary>
         ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,6 +58,18 @@ namespace dbj
 
     public struct notmacros
     {
+        public const char EOS = (char)0;
+
+        /// <summary>
+        /// arg is an array of chars not a string
+        /// we need to trim of the cruft right of the EOS char
+        /// </summary>
+        /// <param name="charray">array of chars</param>
+        ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string to_string(char[] charray)
+        {
+            return new string(charray, 0, charray.index_of(EOS));
+        }
 
         /// <summary>
         /// the all small letters assert ;)
