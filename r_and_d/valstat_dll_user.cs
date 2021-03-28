@@ -50,7 +50,7 @@ namespace dbj
             // ToString() here, but it did not
         }
 
-        [DllImport(@"valstat_dll.dll", EntryPoint = "waveformat")]
+        [DllImport(@"C:\Users\dusan\source\repos\valstat_csharp\valstat_dll\x64\Debug\valstat_dll.dll", EntryPoint = "waveformat")]
         static extern Int32 waveformat(out WAVEFORMATEX wfx);
 
         public static void test_dll_call()

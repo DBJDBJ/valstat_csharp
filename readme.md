@@ -151,7 +151,8 @@ valstat_caller(long.MaxValue, 0);
 
  ## Appendix A: field implementation option
 
- AS an valstat protocol field, implementation option one could use the C# class Field defined bellow. It does implement the behaviour of a valstat field as required by the protocol.
+ As an valstat protocol field, C# implementation option, one could use the 
+class Field defined bellow. It does implement only the behaviour of a valstat field as required by the protocol.
 
  ```c#
  // https://dotnetfiddle.net/0vweOZ
@@ -215,7 +216,9 @@ internal class Program
       field = (T)val_ ; Field.describe(field);  
 	}
 	
-     public static void Main () {
+     public static void Main () 
+     {
+	// can not overload on constraints only
 		 describe_val(42) ;
 		 describe_ref("message") ;
 	 }

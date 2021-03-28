@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\valstat_dll\valstat_dll.vcxproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="dll_make_call\myfun.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
