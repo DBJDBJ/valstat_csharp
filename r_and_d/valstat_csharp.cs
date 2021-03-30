@@ -7,7 +7,7 @@ using static dbj.notmacros;
 namespace dbj
 {
 
-    internal partial class test
+    internal class valstat_csharp
     {
         enum valstat_state
         {
@@ -30,7 +30,7 @@ namespace dbj
         // and return the 
         // value narrowed to UInt32
         // return valstat protocol structure as C# tuple
-        static public (UInt32? value, string? status)
+        static (UInt32? value, string? status)
             safe_divide(decimal numerator, decimal divisor)
         {
             if (numerator > UInt32.MaxValue)

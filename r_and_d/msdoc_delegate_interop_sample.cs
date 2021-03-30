@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace dbj
 {
-    public static class valstat_dll_delegate
+    public static class msdoc_delegate_interop_sample
     {
         // Define a delegate that corresponds to the unmanaged function.
         private delegate bool EnumWC(IntPtr hwnd, IntPtr lParam);
@@ -30,7 +30,7 @@ namespace dbj
 
         public static void test_enum_windows()
         {
-            Log("Enumerating windows and showing their HWND's");
+            Log("{0}\nEnumerating windows and showing their HWND's", whoami());
             // Invoke the method; note the delegate as a first parameter.
             EnumWindows(OutputWindow, IntPtr.Zero);
         }
