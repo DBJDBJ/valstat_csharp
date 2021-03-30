@@ -10,9 +10,14 @@ try
     // not possible before C#9 (2020)
     // int? specimen = true ? 42 : null;
 
+    // dbj.valstat_dll_delegate.test_enum_windows();
+    test_dll_callback_valstat();
+
+    test_int_charr_pair();
+
+    test_valstat_dll();
+
     test_compiler_string_from_dll();
-    test_waveformat_from_dll();
-    // test_few_os_dlls();
 
     //test_simple_valstat();
     //result_test();

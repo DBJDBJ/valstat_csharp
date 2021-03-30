@@ -13,6 +13,8 @@ namespace dbj
         ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int index_of<T>(this T[] array, T value)
         {
+            notmacros.assert(array != null);
+            notmacros.assert(array.Length > 0);
             return Array.IndexOf(array, value);
         }
 
@@ -60,6 +62,13 @@ namespace dbj
     {
         public const char EOS = (char)0;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string whoami([CallerMemberName] string caller_name = null)
+        {
+            if (string.IsNullOrEmpty(caller_name)) return "unknown";
+            if (string.IsNullOrWhiteSpace(caller_name)) return "unknown";
+            return caller_name;
+        }
         /// <summary>
         /// arg is an array of chars not a string
         /// we need to trim of the cruft right of the EOS char
@@ -68,7 +77,11 @@ namespace dbj
         ///  [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe string to_string(char[] charray)
         {
-            return new string(charray, 0, charray.index_of(EOS));
+            if (charray == null) return "null";
+            if (charray.Length < 1) return "empty ";
+            int eospos = charray.index_of(EOS);
+            if (eospos < 1) return "empty";
+            return new string(charray, 0, eospos);
         }
 
         /// <summary>

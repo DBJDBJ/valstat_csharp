@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 // using System.Reflection;
 // using static System.Console;
 using static dbj.notmacros;
