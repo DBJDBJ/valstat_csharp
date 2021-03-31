@@ -66,7 +66,7 @@ namespace dbj
         }
 
         /// <summary>
-        ///  C version:
+        ///  VALSTAT structure C version:
         ///  
         ///  enum { icp_data_count = 255 };
         ///  typedef struct {
@@ -75,76 +75,95 @@ namespace dbj
         ///    }
         ///  int_charr_pair;
         ///  
+        ///  VALSTAT structure C# version
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        unsafe struct int_charr_pair
+        struct int_charr_pair
         {
             public IntPtr val;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 255)]
             public string data;
         }
 
-        // https://stackoverflow.com/a/6093621/10870835
-        static IntPtr make_ptr(int val_)
+        /// <summary>
+        /// make tuple valstat aka: ( int ? , string )
+        /// </summary>
+        /// <param name="icp">C# struct version</param>
+        /// <param name="caller_">the name of the caller</param>
+        static (int? val, string? stat)
+            int_charr_pair_to_tuple
+              (ref int_charr_pair icp)
         {
-            // Allocating memory for int
-            IntPtr intPointer = Marshal.AllocHGlobal(sizeof(int));
-            Marshal.WriteInt32(intPointer, val_);
-            return intPointer;
+            // field names are optional
+            // start in valstat EMPTY state
+            (int? val, string? stat) vstat = (null, null);
 
-            // sending intPointer to unmanaged code , then
-            // Test reading of IntPtr object
-            // int test2 = Marshal.ReadInt32(intPointer); // test2 would be equal 55
-            // Free memory
-            // Marshal.FreeHGlobal(intPointer);
+            if (icp.val != IntPtr.Zero)
+                vstat.val = Marshal.ReadInt32(icp.val);
+
+            if (!string.IsNullOrEmpty(icp.data))
+            {
+                if (!string.IsNullOrWhiteSpace(icp.data))
+                {
+                    vstat.stat = icp.data;
+                }
+            }
+
+            return vstat;
         }
-        static void int_charr_pair_log(ref int_charr_pair icp, [CallerMemberName] string caller_ = " ")
+
+        // log it and return it
+        static (int? val, string? stat)
+            valstat_log((int? val, string? stat) vstat, [CallerMemberName] string caller_ = " ")
         {
-            if (icp.val == IntPtr.Zero)
-                Log(@"{0}: {{ value: {1}, status: {2} }}", caller_, "empty", (icp.data));
-            else
-                Log(@"{0}: {{ value: {1}, status: {2} }}", caller_, Marshal.ReadInt32(icp.val), (icp.data));
+            Log(@"{0}: {{ value: {1}, status: {2} }}",
+                caller_,
+                vstat.val == null ? "empty" : vstat.val.ToString(),
+                vstat.stat == null ? "empty" : vstat.stat);
+            return vstat;
         }
 
-        internal static unsafe void test_int_charr_pair()
+        /*
+         generic version seems like a struggle ..
+        static Tuple<V?, S?> valstat_log<V, S>(Tuple<V?, S?> vstat, [CallerMemberName] string caller_ = " ")
+        {
+            Log(@"{0}: {{ value: {1}, status: {2} }}",
+                caller_,
+                vstat.Item1 == null ? "empty" : vstat.Item1.ToString(),
+                vstat.Item2 == null ? "empty" : vstat.Item2.ToString());
+            return vstat;
+        }
+        */
+        internal static (int? val, string? stat) test_int_charr_pair()
         {
             [DllImport(valstat_dll_location)]
             static extern void safe_division_2(out int_charr_pair vst_ptr, int numerator, int denominator);
 
             int_charr_pair icp = new int_charr_pair();
-
-            // Int32 safe_location = 13;
-            // icp.val = make_ptr(13);
-
-            // Marshall does: char[255], for the `data` member, as per declaration
             safe_division_2(out icp, 42, 12);
-
-            int_charr_pair_log(ref icp, whoami());
-
-            // 'out' means the dll has made it
-            // and in that dll we did not allocated from the heap
-            // Marshal.FreeHGlobal(icp.val);
+            return valstat_log(int_charr_pair_to_tuple(ref icp));
         }
         ////////////////////////////////////////////////////////////////////////////////////////
         // declare a C# funcion pointer aka `delegate` 
-        // C version: typedef void (*safe_division_fp)(int_charr_pair*);
+        // C version:
+        //  typedef void (*safe_division_fp)(int_charr_pair*);
         private delegate void safe_division_delegate(int_charr_pair icp);
 
+        static (int?, string?) vstat_tuple;
         // implement the `delegate`
         private static void safe_division_fp(int_charr_pair icp)
         {
-            // Marshall transforms string to char[255]
-            // for the `data` member
-            // as per declaration
-            int_charr_pair_log(ref icp, whoami());
+            vstat_tuple = valstat_log(int_charr_pair_to_tuple(ref icp));
         }
 
-        internal static void test_dll_callback_valstat()
+        internal static (int? val, string? stat) test_dll_callback_valstat()
         {
             [DllImport(valstat_dll_location)]
             static extern void safe_division_cb(safe_division_delegate callback_, int numerator, int denominator);
 
             safe_division_cb(safe_division_fp, 42, 12);
+
+            return vstat_tuple;
         }
 
     } // valstat_dll

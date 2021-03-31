@@ -10,7 +10,7 @@ try
 {
     // msdoc_delegate_interop_sample.test_enum_windows();
 
-    valstat_dll.descriptor();
+    // valstat_dll.descriptor();
     valstat_dll.test_int_charr_pair();
     valstat_dll.test_dll_callback_valstat();
     //valstat_csharp.test_tuple_valstat();
