@@ -19,6 +19,7 @@ https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
 // }
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using static dbj.notmacros;
@@ -56,7 +57,7 @@ namespace dbj
             if (false == this_name(null, out size_))
                 throw (new Win32Exception(Marshal.GetLastWin32Error()));
 
-            // second obtain the string of required size
+            // second obtain the string of reported size
             var dll_name_ = new string(' ', size_);
             if (false == this_name(dll_name_, out size_))
                 throw (new Win32Exception(Marshal.GetLastWin32Error()));
@@ -67,6 +68,7 @@ namespace dbj
         /// <summary>
         ///  C version:
         ///  
+        ///  enum { icp_data_count = 255 };
         ///  typedef struct {
         ///    int val;
         ///   char data[icp_data_count];
@@ -75,37 +77,66 @@ namespace dbj
         ///  
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        struct int_charr_pair
+        unsafe struct int_charr_pair
         {
-            public int val;
-            // [MarshalAs(UnmanagedType.ByValArray, SizeConst = 255)]
-            // public char[] data;
+            public IntPtr val;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 255)]
             public string data;
         }
 
-        internal static void test_int_charr_pair()
+        // https://stackoverflow.com/a/6093621/10870835
+        static IntPtr make_ptr(int val_)
+        {
+            // Allocating memory for int
+            IntPtr intPointer = Marshal.AllocHGlobal(sizeof(int));
+            Marshal.WriteInt32(intPointer, val_);
+            return intPointer;
+
+            // sending intPointer to unmanaged code , then
+            // Test reading of IntPtr object
+            // int test2 = Marshal.ReadInt32(intPointer); // test2 would be equal 55
+            // Free memory
+            // Marshal.FreeHGlobal(intPointer);
+        }
+        static void int_charr_pair_log(ref int_charr_pair icp, [CallerMemberName] string caller_ = " ")
+        {
+            if (icp.val == IntPtr.Zero)
+                Log(@"{0}: {{ value: {1}, status: {2} }}", caller_, "empty", (icp.data));
+            else
+                Log(@"{0}: {{ value: {1}, status: {2} }}", caller_, Marshal.ReadInt32(icp.val), (icp.data));
+        }
+
+        internal static unsafe void test_int_charr_pair()
         {
             [DllImport(valstat_dll_location)]
             static extern void safe_division_2(out int_charr_pair vst_ptr, int numerator, int denominator);
 
             int_charr_pair icp = new int_charr_pair();
 
-            // Marshall does char[255] for the `data` member
-            // as per declaration
+            // Int32 safe_location = 13;
+            // icp.val = make_ptr(13);
+
+            // Marshall does: char[255], for the `data` member, as per declaration
             safe_division_2(out icp, 42, 12);
 
-            Log(@"{0}: {{ value: {1}, status: {2} }}", whoami(), icp.val, (icp.data));
-        }
+            int_charr_pair_log(ref icp, whoami());
 
-        // declare a delegate 
+            // 'out' means the dll has made it
+            // and in that dll we did not allocated from the heap
+            // Marshal.FreeHGlobal(icp.val);
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // declare a C# funcion pointer aka `delegate` 
         // C version: typedef void (*safe_division_fp)(int_charr_pair*);
         private delegate void safe_division_delegate(int_charr_pair icp);
 
-        // implement the delegate
+        // implement the `delegate`
         private static void safe_division_fp(int_charr_pair icp)
         {
-            Log(@"{0}: {{ value: {1}, status: {2} }}", whoami(), icp.val, (icp.data));
+            // Marshall transforms string to char[255]
+            // for the `data` member
+            // as per declaration
+            int_charr_pair_log(ref icp, whoami());
         }
 
         internal static void test_dll_callback_valstat()
@@ -113,8 +144,6 @@ namespace dbj
             [DllImport(valstat_dll_location)]
             static extern void safe_division_cb(safe_division_delegate callback_, int numerator, int denominator);
 
-            // Marshall does char[255] for the `data` member
-            // as per declaration
             safe_division_cb(safe_division_fp, 42, 12);
         }
 
