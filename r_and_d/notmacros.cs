@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace dbj
 {
@@ -232,4 +233,95 @@ namespace dbj
             return false;
         }
     } // notmacros
+
+    //internal delegate IntPtr allocator(int size_);
+    //internal delegate void deallocator(IntPtr pointer_);
+
+    //internal delegate void marshall_writer<T>(IntPtr handle, T val);
+    //internal delegate T marshall_reader<T>(IntPtr handle);
+
+    internal static class dispenser_int_treat
+    {
+        internal static Func<IntPtr, int> reader = p => Marshal.ReadInt32(p); //  delegate (IntPtr p) { return Marshal.ReadInt32(p); };
+        internal static Func<IntPtr, int, bool> writer = delegate (IntPtr p, int val_) { Marshal.WriteInt32(p, val_); return true; };
+
+        internal static Func<IntPtr> alloc = delegate () { return Marshal.AllocHGlobal(sizeof(int)); };
+        internal static Func<IntPtr, bool> dealloc = delegate (IntPtr p) { Marshal.FreeHGlobal(p); p = IntPtr.Zero; return true; };
+    }
+
+    /// <summary>
+    /// usage:
+    /// var int_ptr = dispenser(0) ;
+    /// send to dll `int * ptr` and then use it
+    /// int fty2    = int_ptr.value
+    /// </summary>
+    internal class dispenser : IDisposable
+    {
+        internal IntPtr handle { get; private set; }
+
+        internal int value
+        {
+            /// NOTE: dll code can set it to null
+            /// in that case exception happens
+            get => dispenser_int_treat.reader(handle);
+        }
+
+        private bool disposed = false;
+
+        public dispenser(int val_)
+        {
+            handle = dispenser_int_treat.alloc();
+            dispenser_int_treat.writer(handle, val_);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    // component.Dispose();
+                }
+                dispenser_int_treat.dealloc(handle);
+                handle = IntPtr.Zero;
+                disposed = true;
+            }
+        }
+
+        // will use in different context
+        //[System.Runtime.InteropServices.DllImport("Kernal32")]
+        // private extern static Boolean CloseHandle(IntPtr handle);
+    }
+
+    /// <summary>
+    /// https://stackoverflow.com/a/66179657/10870835
+    /// </summary>
+    public class Value<T> where T : struct
+    {
+        public static implicit operator T(Value<T> val)
+        {
+            return val._value;
+        }
+
+        private T _value;
+
+        public Value(T value) { _value = value; }
+
+        public Value() : this(default) { }
+
+        public T value
+        {
+            // get => _value;
+            set => _value = value;
+        }
+
+        public override string ToString() { return _value.ToString(); }
+    }
+
 } // dbj
