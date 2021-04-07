@@ -5,7 +5,7 @@
 - [1. valstat protocol](#1-valstat-protocol)
 - [2. Motivation](#2-motivation)
 - [3. Implementation](#3-implementation)
-- [4. Appendix A: valstat protocol implementation](#4-appendix-a-valstat-protocol-implementation)
+- [4. Appendix A: valstat protocol C#9 implementation](#4-appendix-a-valstat-protocol-c9-implementation)
   - [5. valstat field C# synopsis](#5-valstat-field-c-synopsis)
   - [6. C# valstat synopsis](#6-c-valstat-synopsis)
   - [7. A bit more realistic example](#7-a-bit-more-realistic-example)
@@ -75,7 +75,7 @@ DLL code calling from C# is in the file [valstat_dll.cs](demo/valstat_dll.cs). C
 
 That is correct but perhaps not the most efficient way of calling dll's written in C from C#. The purpose of that code is to show the usefulness of the valstat protocol when crossing the language and component boundaries.
  
- ## 4. Appendix A: valstat protocol implementation
+ ## 4. Appendix A: valstat protocol C#9 implementation
 
  Current (2021 Q1) C# version is C#9. 
 
