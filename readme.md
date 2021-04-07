@@ -85,20 +85,20 @@ That is correct but perhaps not the most efficient way of calling dll's written 
 
  Without going into details, C# type hierarchy is divided on "value types", numbers and booleans and "reference types", classes and subtypes of classes. Reference type can be `null` bu design. Value type can not be `null`. Unless it is declared as a "nullable" type with a question mark on the right of the type name
  ```c#
- // C# value types PRINT, declared as nullable type
- PRINT? n_int = null ;
- // nullable PRINT use
- string sint = nint == null ? "null" : nint.ToString() ;
+ // C# value type int, declared as nullable type
+ int ? n_int = null ;
+ // nullable PRINT usage example
+  string sint = nint == null ? "null" : nint.ToString() ;
  ```
-valstat field concept will be implemented as C# "nullable type".
+valstat field concept is elected to be implemented as C# "nullable type".
 
 ### 6. C# valstat synopsis
 
-To implement the valstat in C#, we will use the [C# "tuples"](https://github.com/dotnet/roslyn/blob/main/docs/features/tuples.md).
+To implement the valstat structure in C#, we will use the [C# "tuples"](https://github.com/dotnet/roslyn/blob/main/docs/features/tuples.md).
 
- C# tuples seems like the most lightweight C# feature available to successfully implement the valstat protocol.
+ C# tuples seem like the most lightweight C# feature available to successfully implement the valstat protocol.
 
- Following code use is to illustrate C# tuples. It is advisory, not mandatory. 
+ Following code use is to illustrate C# tuples. This code is advisory, not mandatory. 
 
  ```c#
 // not mandatory for valstat protocol implementation 
