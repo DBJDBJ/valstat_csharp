@@ -29,7 +29,7 @@
 
 For more details on C#9 using the valstat protocol please look into the Appendix A.
 
-Part of this repository is standard C#9 project. It is calling into Windows native DLL ["valstat_dll"](https://github.com/DBJDBJ/valstat_dll) written in C. valstat protocol is used to communicate the result of calling "safe division" functions in that dll.
+Part of this repository is standard [Visual Studio C#9 project](demo). It is calling into Windows native DLL ["valstat_dll"](https://github.com/DBJDBJ/valstat_dll) written in C. valstat protocol is used to communicate the result of calling "safe division" functions in that dll.
 
 The C structure acting as the valstat structure
 ```cpp
@@ -71,6 +71,9 @@ typedef void (*safe_division_fp)(int_charr_pair*);
 
 __declspec(dllexport) void safe_division_cb(safe_division_fp callback_, int numerator, int denominator)'
 ```
+DLL code calling from C# is in the file [valstat_dll.cs](demo/valstat_dll.cs). Code is simple C# also extensively commented.
+
+That is correct but perhaps not the most efficient way of calling dll's written in C from C#. The purpose of that code is to show the usefulness of the valstat protocol when crossing the language and component boundaries.
  
  ## 4. Appendix A: valstat protocol implementation
 
