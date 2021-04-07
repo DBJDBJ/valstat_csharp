@@ -6,11 +6,10 @@
 - [2. Motivation](#2-motivation)
 - [3. Implementation](#3-implementation)
 - [4. Appendix A: valstat protocol implementation](#4-appendix-a-valstat-protocol-implementation)
-- [5. valstat field C# synopsis](#5-valstat-field-c-synopsis)
-- [6. C# valstat synopsis](#6-c-valstat-synopsis)
-- [7. A bit more realistic example](#7-a-bit-more-realistic-example)
-- [8. Conclusion](#8-conclusion)
-- [9. Appendix A: C# valstat implementation](#9-appendix-a-c-valstat-implementation)
+  - [5. valstat field C# synopsis](#5-valstat-field-c-synopsis)
+  - [6. C# valstat synopsis](#6-c-valstat-synopsis)
+  - [7. A bit more realistic example](#7-a-bit-more-realistic-example)
+  - [8. Conclusion](#8-conclusion)
 
 *As soon as we started programming, we found to our surprise that it wasn't as easy to get programs right as we had thought. Debugging had to be discovered. I can remember the exact instant when I realized that a large part of my life from then on was going to be spent in finding mistakes in my own programs.* —Maurice Wilkes discovers bugs, 1949 
 
@@ -80,7 +79,7 @@ That is correct but perhaps not the most efficient way of calling dll's written 
 
  Current (2021 Q1) C# version is C#9. 
 
- ## 5. valstat field C# synopsis 
+ ### 5. valstat field C# synopsis 
 
  *Terminology: valstat "field" is similar to but not the same as C# "field". C# class members (not methods) can be "properties" and "fields". C# field is what is in C or C++ structure or class called "member" (not a method).*
 
@@ -93,7 +92,7 @@ That is correct but perhaps not the most efficient way of calling dll's written 
  ```
 valstat field concept will be implemented as C# "nullable type".
 
-## 6. C# valstat synopsis
+### 6. C# valstat synopsis
 
 To implement the valstat in C#, we will use the [C# "tuples"](https://github.com/dotnet/roslyn/blob/main/docs/features/tuples.md).
 
@@ -129,7 +128,7 @@ class example {
  ```
  Above is the illustration on how to declare "valstat enabled" function and how to return valstat structure in one of the four states, defined by the valstat protocol. That is just an C# example to show C# syntax and use of C# tuples to implement the valstat protocol. 
 
- ## 7. A bit more realistic example
+ ### 7. A bit more realistic example
 
  We will implement the almost mandatory, "safe division", in C#. `valstat` will be used for full reporting of the result, and then for call consuming. 
 
@@ -205,84 +204,10 @@ valstat_caller(42, 13);
 valstat_caller(42, 0);
 valstat_caller(long.MaxValue, 0);
  ```
- ## 8. Conclusion
+ ### 8. Conclusion
 
- What is presented is minimal C# that implement valstat protocol. Adopters might use more elaborate code. As long as it conforms to the valstat protocol, it will be able to interoperate with remote components implemented in any language,as long as everyone is using the valstat protocol.
+ What is presented is minimal C#9 used to implement valstat protocol. Adopters might use more elaborate code. As long as it conforms to the valstat protocol, it will be able to interoperate with remote components implemented in any language,as long as everyone is using the valstat protocol.
+
+ -----
 
  &copy; 2021 by dbj@dbj.org , https://dbj.org/license_dbj
-
- ## 9. Appendix A: C# valstat implementation
-
- As an valstat protocol field, C# implementation option, one could use the 
-class Field defined bellow. It does implement only the behaviour of a valstat field as required by the protocol.
-
- ```c#
- // https://dotnetfiddle.net/0vweOZ
- #nullable enable
-using System ;
-using System.Linq;
-using static System.Console ;
-
-// https://dbj.org/license_dbj
-public static class Field {
-
-/// https://stackoverflow.com/a/66604069/10870835
-    public static string FormattedName(this Type type)
-    {
-        if(type.IsGenericType)
-        {
-            string genericArguments = type.GetGenericArguments()
-                                .Select(x => x.Name)
-                                .Aggregate((x1, x2) => $"{x1}, {x2}");
-            return $"{type.Name.Substring(0, type.Name.IndexOf("`"))}"
-                    + $"<{genericArguments}>";
-        }
-        return type.Name;
-    }
-
-// this is the only behavioural attribute required 
-// from a valstat field concept
-// field can be in two states: "empty" or "occupied"
-// namely is it "empty" or not.
-public static bool is_empty<T> (T val_ ) 
-{	return val_ is null ; }
-
-// helper
-public static string to_string<T> (T val_ ) 
-{	return is_empty(val_) ? "empty" : val_.ToString() ;}
-
-// printing the formatted field type and content
-public static void describe<T>( T field ) 
-{ 
-    WriteLine("Field type: {0}, Field content: {1}", 
-      typeof(T).FormattedName(), to_string(field) );  
-}
-	
-} // Field
-
-internal class Program
-{
-	// C#9 'quirk'? Need constraints but can 
-	// not overload on constraints only
-	static void describe_ref <T> ( T val_ )	where T : class
-	{
-	  WriteLine("\n");
-      T? field = null ; Field.describe(field);          
-      field = (T)val_ ; Field.describe(field);  
-	}
-	
-	static void describe_val <T> ( T val_ )	where T : struct
-	{
-	  WriteLine("\n");
-      T? field = null ; Field.describe(field);          
-      field = (T)val_ ; Field.describe(field);  
-	}
-	
-     public static void Main () 
-     {
-	// can not overload on constraints only
-		 describe_val(42) ;
-		 describe_ref("message") ;
-	 }
-}
- ```
