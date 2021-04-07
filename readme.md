@@ -62,7 +62,7 @@ There are two C functions in the dll called from C#.
 __declspec(dllexport) void 
    safe_division(int_charr_pair* vst_ptr, int numerator, int denominator);
 ```
-The second variant is using the callback.
+The second variant is using the callback sent from the C# side.
 ```cpp
 /// <summary>
 ///  using callbacks seems more malleable as a C# interop mechanism
