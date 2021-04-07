@@ -28,6 +28,7 @@ namespace dbj
 {
     internal class valstat_dll
     {
+        // during the development we need the full path to the dll, so we hard code it here.
         // there might be better solutions:
         // 1. store the paths in the configuration file
         // 2. dynamiclay load the dll and get the function inside: https://stackoverflow.com/a/8836228/10870835
@@ -87,7 +88,13 @@ namespace dbj
 
         /// <summary>
         /// make tuple valstat aka: ( int ? , string )
-        /// </summary>
+        /// we need to "marshall" to tuples since tuples are so called "generics"
+        /// and generics can not be marshalled in C#9:
+        /// 
+        ///              MarshalDirectiveException
+        /// Cannot marshal 'parameter #1': Non-blittable generic types cannot be marshaled.
+        /// 
+        ///</summary>
         /// <param name="icp">C# struct version</param>
         /// <param name="caller_">the name of the caller</param>
         static (int? val, string? stat)
@@ -108,13 +115,13 @@ namespace dbj
                     vstat.stat = icp.data;
                 }
             }
-
             return vstat;
         }
 
         // log it and return it
+        // notice the ad-hoc tuple declaration
         static (int? val, string? stat)
-            valstat_log((int? val, string? stat) vstat, [CallerMemberName] string caller_ = " ")
+            log_the_tuple((int? val, string? stat) vstat, [CallerMemberName] string caller_ = " ")
         {
             Log(@"{0}: {{ value: {1}, status: {2} }}",
                 caller_,
@@ -123,37 +130,43 @@ namespace dbj
             return vstat;
         }
 
-        /*
-         generic version seems like a struggle ..
-        static Tuple<V?, S?> valstat_log<V, S>(Tuple<V?, S?> vstat, [CallerMemberName] string caller_ = " ")
-        {
-            Log(@"{0}: {{ value: {1}, status: {2} }}",
-                caller_,
-                vstat.Item1 == null ? "empty" : vstat.Item1.ToString(),
-                vstat.Item2 == null ? "empty" : vstat.Item2.ToString());
-            return vstat;
-        }
-        */
         internal static (int? val, string? stat) test_int_charr_pair()
         {
             [DllImport(valstat_dll_location)]
-            static extern void safe_division_2(out int_charr_pair vst_ptr, int numerator, int denominator);
+            static extern void safe_division(out int_charr_pair vst_ptr, int numerator, int denominator);
 
+            // allocate the valstat struct here
             int_charr_pair icp = new int_charr_pair();
-            safe_division_2(out icp, 42, 12);
-            return valstat_log(int_charr_pair_to_tuple(ref icp));
+            // call the dll
+            safe_division(out icp, 42, 12);
+            // log and marhsall to tuple
+            // return tuple
+            return log_the_tuple(int_charr_pair_to_tuple(ref icp));
         }
+
+        /// <summary>
+        /// this is the tuple variant of the struct above
+        /// general C#9 code will use tuples
+        /// but we can not use tuples C# interop function arguments
+        /// this is static variable not a tuple declaration
+        /// </summary>
+        static (int?, string?) vstat_tuple;
+
         ////////////////////////////////////////////////////////////////////////////////////////
         // declare a C# funcion pointer aka `delegate` 
         // C version:
         //  typedef void (*safe_division_fp)(int_charr_pair*);
         private delegate void safe_division_delegate(int_charr_pair icp);
 
-        static (int?, string?) vstat_tuple;
         // implement the `delegate`
+        // this is a callback used from inside the DLL
+        // we need to take care not to spend too 
+        // much time in here, because dll will wait 
+        // for this function to return
         private static void safe_division_fp(int_charr_pair icp)
         {
-            vstat_tuple = valstat_log(int_charr_pair_to_tuple(ref icp));
+            // saving the result
+            vstat_tuple = log_the_tuple(int_charr_pair_to_tuple(ref icp));
         }
 
         internal static (int? val, string? stat) test_dll_callback_valstat()
@@ -161,8 +174,11 @@ namespace dbj
             [DllImport(valstat_dll_location)]
             static extern void safe_division_cb(safe_division_delegate callback_, int numerator, int denominator);
 
+            // call into dkk
             safe_division_cb(safe_division_fp, 42, 12);
 
+            // return the result of log_the_tuple() obtained
+            // from inside safe_division_fp()
             return vstat_tuple;
         }
 
