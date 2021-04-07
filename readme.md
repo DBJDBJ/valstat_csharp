@@ -94,7 +94,7 @@ valstat field concept is elected to be implemented as C# "nullable type".
 
 ### 6. C# valstat synopsis
 
-To implement the valstat structure in C#, we will use the [C# "tuples"](https://github.com/dotnet/roslyn/blob/main/docs/features/tuples.md).
+To implement the valstat structure in C#, we will use the [C#9 "tuples"](https://github.com/dotnet/roslyn/blob/main/docs/features/tuples.md).
 
  C# tuples seem like the most lightweight C# feature available to successfully implement the valstat protocol.
 
@@ -104,7 +104,7 @@ To implement the valstat structure in C#, we will use the [C# "tuples"](https://
 // not mandatory for valstat protocol implementation 
 enum valstat_state { OK, ERROR, INFO, EMPTY }
 ```
-There is no valstat type, structure, class or record required. Valstat structure is C# tuple as function return type. Following is an example of valstat enabled C# method. Note: C# has no free standing functions, just methods, functions inside a class. 
+There is no special valstat C# type, structure, class or record required. "Valstat protocol structure" is C# tuple as function return type. Following is an example of valstat enabled C# method. Note: C# has no free standing functions, just methods, functions inside a class. 
 ```c#
 class example {
 // returning a tuple made of two nullable instances of PRINT and string type.
@@ -113,7 +113,7 @@ class example {
        // C# has not typedef in a C/C++ sense
        // type? is a syntax to declare a "nullable" type
        // null can be assigned to any "value type" if it is "nullable"
-       (PRINT? val, string? stat) 
+       (int? val, string? stat) 
      valstat_maker(valstat_state state)
  {
     switch (state)
@@ -139,26 +139,26 @@ class example {
  // status is nullable string
  // null field is considered "empty"
  // note: field names are optional
- (UInt32? value, string? status)
+ (int? value, string? status)
  ```
 Value is "nullable" unsigned 32 bit PRINT. Thus `null` can be also assigned to it. `status` is the same but based on the C# intrinsic `string` type.
  ```c#
 // perform safe division of two C# "decimals"
 // treated as unsigned 32 bit PRINT internally
-// C# UInt32 
+// C# int 
 // return valstat protocol structure as C# tuple
-static public (UInt32? value, string? status)
+static public (int? value, string? status)
 safe_divide(decimal numerator, decimal divisor)
 {
-if (numerator > UInt32.MaxValue)
+if (numerator > int.MaxValue)
 // valstat ERROR state, value is "empty"
-    return (null, "Error: numerator > uint32 max");
+    return (null, "Error: numerator > int max");
 
 if (numerator < 0)
     return (null, "Error: numerator < 0");
 
-if (divisor > UInt32.MaxValue)
-    return (null, "Error: divisor > uint32 max");
+if (divisor > int.MaxValue)
+    return (null, "Error: divisor > int max");
 
 if (divisor < 0)
     return (null, "Error: divisor < 0");
@@ -169,7 +169,7 @@ if (divisor == 0)
 try
 {
     // valstat OK state, status is "empty"
-    return ((UInt32)(numerator / divisor), null);
+    return ((int)(numerator / divisor), null);
 }
 catch (System.Exception x)
 {
