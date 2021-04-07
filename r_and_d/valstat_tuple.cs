@@ -6,8 +6,14 @@ using static dbj.notmacros;
 
 namespace dbj
 {
-
-    internal class valstat_csharp
+    /// this declaration works 
+    /// but usage with tuple literals does not
+    using my_valstat = Tuple<int, string>; //  (int? val, string? stat) ;
+    /// <summary>
+    /// tuples are C#9 feature
+    /// assumption is they will be used extensively
+    /// </summary>
+    internal class valstat_tuple
     {
         enum valstat_state
         {
@@ -15,7 +21,8 @@ namespace dbj
         }
         // there is no valstat structure, class or record
         // valstat structure is C#7 tuple
-        static (int? val, string? stat) valstat_maker(valstat_state state)
+        static (int? val, string? stat)
+            valstat_maker(valstat_state state)
         {
             switch (state)
             {
@@ -30,7 +37,7 @@ namespace dbj
         // and return the 
         // value narrowed to UInt32
         // return valstat protocol structure as C# tuple
-        static (UInt32? value, string? status)
+        static (int? value, string? status)
             safe_divide(decimal numerator, decimal divisor)
         {
             if (numerator > UInt32.MaxValue)
@@ -50,7 +57,7 @@ namespace dbj
 
             try
             {
-                return ((UInt32)(numerator / divisor), null);
+                return ((int)numerator / (int)divisor, null);
             }
             catch (System.Exception x)
             {
@@ -58,11 +65,15 @@ namespace dbj
             }
         }
 
-        static void test_driver(long a, long b)
+        /// <summary>
+        /// decoding valstat is a two step process
+        /// frist step is branching on empty or not state
+        /// scond step is using the values that are not empty
+        /// </summary>
+        /// <param name="vstat_struct">the valstat struct</param>
+        public static void decode_valstat((int? val, string? stat) vstat_struct)
         {
-            var (val, stat) = safe_divide(a, b);
-
-            Log("\nsafe_divide({0},{1}) returned ", a, b);
+            var (val, stat) = vstat_struct;
 
             if (val is not null)
             {
@@ -77,9 +88,14 @@ namespace dbj
 
         public static void test_tuple_valstat()
         {
-            test_driver(42, 13);
-            test_driver(42, 0);
-            test_driver(long.MaxValue, 0);
+            Log("\nsafe_divide({0},{1}) returned ", 42, 13);
+            decode_valstat(safe_divide(42, 13));
+
+            Log("\nsafe_divide({0},{1}) returned ", 42, 0);
+            decode_valstat(safe_divide(42, 0));
+
+            Log("\nsafe_divide({0},{1}) returned ", long.MaxValue, 0);
+            decode_valstat(safe_divide(long.MaxValue, 0));
         }
         public static void test_quick_tuple_valstat()
         {
@@ -93,38 +109,3 @@ namespace dbj
         }
     }
 }// internal partial class test
-
-#if LEGACY
-#region SO inspiration -- LEGACY BEFORE TUPLES -- PLAYGROUND ONLY
-
-        private static void foo()
-        {
-            var user = AnonCast(
-                GetUserTuple(),
-                new
-                {
-                    Name = default(string),
-                    Badges = default(int)
-                }
-            );
-
-            Log("\nName: {0} Badges: {1}", user.Name, user.Badges);
-        }
-
-        static object GetUserTuple()
-        {
-            return new { Name = "dp", Badges = 5 };
-        }
-
-        // Using the magic of Type Inference...
-        static T AnonCast<T>(object obj, T t)
-        {
-            return (T)obj;
-        }
-
-        public static void test()
-        {
-            foo();
-        }
-#endregion
-#endif

@@ -43,6 +43,8 @@ namespace dbj
         internal static void descriptor()
         {
             // local extern function declaration is C#9 feature
+            // CharSet attribute parameter is CharSet.Unicode
+            // CharSet.Ansi is default and that is unfortunate
 
             [DllImport(valstat_dll_location, EntryPoint = "compiler_string", CharSet = CharSet.Unicode, ExactSpelling = true)]
             static extern Int32 compiler_string([Out] char[] string_, Int32 string_length_);
@@ -91,7 +93,7 @@ namespace dbj
         /// we need to "marshall" to tuples since tuples are so called "generics"
         /// and generics can not be marshalled in C#9:
         /// 
-        ///              MarshalDirectiveException
+        /// MarshalDirectiveException
         /// Cannot marshal 'parameter #1': Non-blittable generic types cannot be marshaled.
         /// 
         ///</summary>
@@ -130,7 +132,8 @@ namespace dbj
             return vstat;
         }
 
-        internal static (int? val, string? stat) test_int_charr_pair()
+        internal static (int? val, string? stat) safe_division
+            (int nominator, int denominator)
         {
             [DllImport(valstat_dll_location)]
             static extern void safe_division(out int_charr_pair vst_ptr, int numerator, int denominator);
@@ -138,7 +141,7 @@ namespace dbj
             // allocate the valstat struct here
             int_charr_pair icp = new int_charr_pair();
             // call the dll
-            safe_division(out icp, 42, 12);
+            safe_division(out icp, nominator, denominator);
             // log and marhsall to tuple
             // return tuple
             return log_the_tuple(int_charr_pair_to_tuple(ref icp));
@@ -147,7 +150,8 @@ namespace dbj
         /// <summary>
         /// this is the tuple variant of the struct above
         /// general C#9 code will use tuples
-        /// but we can not use tuples C# interop function arguments
+        /// but we can not use non-blitable tuples C# interop function arguments
+        /// and this is non-blitable besause it used string
         /// this is static variable not a tuple declaration
         /// </summary>
         static (int?, string?) vstat_tuple;
@@ -169,13 +173,14 @@ namespace dbj
             vstat_tuple = log_the_tuple(int_charr_pair_to_tuple(ref icp));
         }
 
-        internal static (int? val, string? stat) test_dll_callback_valstat()
+        internal static (int? val, string? stat)
+            safe_division_2(int nominator, int denominator)
         {
             [DllImport(valstat_dll_location)]
             static extern void safe_division_cb(safe_division_delegate callback_, int numerator, int denominator);
 
             // call into dkk
-            safe_division_cb(safe_division_fp, 42, 12);
+            safe_division_cb(safe_division_fp, nominator, denominator);
 
             // return the result of log_the_tuple() obtained
             // from inside safe_division_fp()
