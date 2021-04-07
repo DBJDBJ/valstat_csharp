@@ -59,8 +59,8 @@ There are two C functions in the dll called from C#.
 // using valstat protocol to send back full info
 // through the pointer to the valstat struct
 // sent from the caller
-// CAVEAT EMPTOR: in case of MT we would need to enter the critical section here at the entrance
-__declspec(dllexport) void safe_division(int_charr_pair* vst_ptr, int numerator, int denominator);
+__declspec(dllexport) void 
+   safe_division(int_charr_pair* vst_ptr, int numerator, int denominator);
 ```
 The second variant is using the callback.
 ```cpp
@@ -69,7 +69,8 @@ The second variant is using the callback.
 /// </summary>
 typedef void (*safe_division_fp)(int_charr_pair*);
 
-__declspec(dllexport) void safe_division_cb(safe_division_fp callback_, int numerator, int denominator)'
+__declspec(dllexport) void 
+   safe_division_cb(safe_division_fp callback_, int numerator, int denominator);
 ```
 DLL code calling from C# is in the file [valstat_dll.cs](demo/valstat_dll.cs). Code is simple C# also extensively commented.
 
