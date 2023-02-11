@@ -1,7 +1,6 @@
 
  <h1>C# valstat implementation</h1>
 
- - [valstat protocol](#valstat-protocol)
 - [1. valstat protocol](#1-valstat-protocol)
 - [2. Motivation](#2-motivation)
 - [3. Implementation](#3-implementation)
@@ -12,6 +11,8 @@
   - [8. Conclusion](#8-conclusion)
 
 *As soon as we started programming, we found to our surprise that it wasn't as easy to get programs right as we had thought. Debugging had to be discovered. I can remember the exact instant when I realized that a large part of my life from then on was going to be spent in finding mistakes in my own programs.* —Maurice Wilkes discovers bugs, 1949 
+
+For inspiration you might [detour here](https://youtu.be/a1ye9eGTB98).
 
 ## 1. [valstat](https://github.com/DBJDBJ/valstat) protocol
 
