@@ -28,18 +28,17 @@ namespace dbj
 {
     internal class valstat_dll
     {
+
+        // This is as far as we will go here: const is a compile time thing in C#
+
+        const string valstat_dll_location = @"C:\Users\dusan\.valstat\valstat_dll.dll";
+
         // during the development we need the full path to the dll, so we hard code it here.
         // there might be better solutions:
         // 1. store the paths in the configuration file
         // 2. dynamiclay load the dll and get the function inside: https://stackoverflow.com/a/8836228/10870835
         // that might be very slow
-        //
-        // This is as far as we will go here: const is a compile time thing in C#
-#if DEBUG
-        const string valstat_dll_location = @"D:\DEVL\GITHUB\DBJDBJ\valstat_dll\x64\Debug\valstat_dll.dll";
-#else
-        const string valstat_dll_location = @"D:\DEVL\GITHUB\DBJDBJ\valstat_dll\x64\Release\valstat_dll.dll";
-#endif
+
         internal static void descriptor()
         {
             // local extern function declaration is C#9 feature
@@ -56,6 +55,9 @@ namespace dbj
             compiler_string(buf_, 128);
 
             // first ask how much space is required for the string rezult
+            // if the target dll is built in debug mode
+            // follow through debugger and you will find yourself inside
+            // the dll written in C
             int size_ = 0;
             if (false == this_name(null, out size_))
                 throw (new Win32Exception(Marshal.GetLastWin32Error()));

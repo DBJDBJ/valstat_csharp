@@ -4,7 +4,7 @@
 
                                                +-------------------------+
                     +------------+             |                         |
-                    |            +<------------+     FieldsValstat<VT,ST>      |
+                    |            +<------------+ FieldsValstat<VT,ST>    |
                     |   IField   |             |                         |
                     |   empty    |             |  IField val_            |
                     +------+-----+             |  IField stat_           |

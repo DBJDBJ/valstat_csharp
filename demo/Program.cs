@@ -8,6 +8,9 @@ using dbj;
 
 try
 {
+    // straight into the deep
+    // use C:\Users\<your user name>\.valstat\valstat_dll.dll
+    // folow through debugger 
     valstat_dll.descriptor();
     valstat_tuple.decode_valstat(valstat_dll.safe_division(42, 12));
     valstat_tuple.decode_valstat(valstat_dll.safe_division(42, 0));
