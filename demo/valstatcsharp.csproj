@@ -11,9 +11,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="adhoc\**" />
     <Compile Remove="x64\**" />
+    <EmbeddedResource Remove="adhoc\**" />
     <EmbeddedResource Remove="x64\**" />
+    <None Remove="adhoc\**" />
     <None Remove="x64\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="notmacros.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="notmacros.csNOT" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,11 +34,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="bin\Debug\net5.0\valstat_dll.dll" />
-    <None Include="bin\Debug\net5.0\valstat_dll.exp" />
-    <None Include="bin\Debug\net5.0\valstat_dll.ilk" />
-    <None Include="bin\Debug\net5.0\valstat_dll.lib" />
-    <None Include="bin\Debug\net5.0\valstat_dll.pdb" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
+
+  <!-- Required for the dbj configurator to work -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
+  </ItemGroup>
+  
+  <Import Project="..\..\dbjcore\dbjcore.projitems" Label="Shared" />
 
 </Project>
