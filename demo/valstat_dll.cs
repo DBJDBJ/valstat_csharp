@@ -38,7 +38,12 @@ internal class valstat_dll
     // 2. dynamiclay load the dll and get the function inside: https://stackoverflow.com/a/8836228/10870835
     // that might be very slow
 
-    internal static void descriptor()
+    /// <summary>
+    /// obtain the dll used and the name of the compiler used to build it
+    /// obviously this is Windows specific C#
+    /// </summary>
+    /// <returns>valstat {bool ?, string ?} </returns>
+    internal static ( bool ? , string ? ) descriptor()
     {
         // local extern function declaration is C#9 feature
         // CharSet attribute parameter is CharSet.Unicode
@@ -50,8 +55,13 @@ internal class valstat_dll
         [DllImport(valstat_dll_location, EntryPoint = "this_name", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         static extern bool this_name([MarshalAs(UnmanagedType.LPWStr)] string name_, out Int32 string_length_);
 
-        char[] buf_ = new char[128];
-        compiler_string(buf_, 128);
+        char[] compiler_name_ = new char[128];
+        int compiler_name_size = compiler_string(compiler_name_, 128);
+            // it is unlikely the compiler name will be one char or less
+            if (compiler_name_size < 2 ) 
+            return ( null, (new Win32Exception(Marshal.GetLastWin32Error())).Message ) ;
+
+        var compiler_name_string = new string(compiler_name_, 0, compiler_name_size);
 
         // first ask how much space is required for the string rezult
         // if the target dll is built in debug mode
@@ -59,23 +69,25 @@ internal class valstat_dll
         // the dll written in C
         int size_ = 0;
         if (false == this_name("", out size_))
-            throw (new Win32Exception(Marshal.GetLastWin32Error()));
+            return (null, (new Win32Exception(Marshal.GetLastWin32Error())).Message);
 
         // second obtain the string of reported size
         var dll_name_ = new string(' ', size_);
         if (false == this_name(dll_name_, out size_))
-            throw (new Win32Exception(Marshal.GetLastWin32Error()));
+            return (null, (new Win32Exception(Marshal.GetLastWin32Error())).Message);
 
         (string File, int Line) = DBJcore.FileLineInfo();
 
         DBJLog.debug(
             "\n(File:{3})(Line:{4})(Function:{2}) : Compiler used to build {0} is: {1}\n", 
-            dll_name_, 
-            new string(buf_) , 
+            dll_name_,
+            compiler_name_string, 
             DBJcore.Whoami(),
             File,
             Line
             );
+
+        return (true, string.Empty );
     }
 
     /// <summary>

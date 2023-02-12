@@ -13,9 +13,9 @@ using my_valstat = Tuple<int, string>; //  (int? val, string? stat) ;
 /// tuples are C#9 feature
 /// assumption is they will be used extensively
 /// </summary>
-internal class valstat_tuple
+internal sealed class Valstat
 {
-    enum valstat_state
+    public enum valstat_state
     {
         OK, ERROR, INFO, EMPTY
     }
@@ -31,6 +31,20 @@ internal class valstat_tuple
             case valstat_state.OK: return (1234, null);         // OK state
         }
         return (null, null);                                    // EMPTY state
+    }
+
+    public static valstat_state to_state<V,S>
+        ((V? val, S? stat) vstat_struct )
+    {
+        var (val, stat) = vstat_struct;
+
+        if ((val is null) && (stat is null)) return valstat_state.EMPTY ;
+
+        if ((val is null) && (stat is not null)) return valstat_state.ERROR;
+
+        if ((val is not null) && (stat is not null)) return valstat_state.INFO;
+
+        return valstat_state.OK;
     }
 
     // perform safe division of two longs
@@ -71,19 +85,14 @@ internal class valstat_tuple
     /// scond step is using the values that are not empty
     /// </summary>
     /// <param name="vstat_struct">the valstat struct</param>
-    public static void decode_valstat((int? val, string? stat) vstat_struct)
+    public static void decode_valstat<V,S>((V? val, S? stat) vstat)
     {
-        var (val, stat) = vstat_struct;
+        Valstat.valstat_state vs = Valstat.to_state<V,S>(vstat);
 
-        if (val is not null)
-        {
-            DBJLog.debug("\trezult : {0}", val);
-        }
-
-        if (stat is not null)
-        {
-            DBJLog.debug("\tstatus : {0}", stat);
-        }
+        DBJLog.debug("Valstat");
+        DBJLog.debug($"State : {vs}");
+        DBJLog.debug($"Val   : {vstat.val}");
+        DBJLog.debug($"Stat  : {vstat.stat}");
     }
 
     public static void test_tuple_valstat()
