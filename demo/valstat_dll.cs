@@ -66,11 +66,15 @@ internal class valstat_dll
         if (false == this_name(dll_name_, out size_))
             throw (new Win32Exception(Marshal.GetLastWin32Error()));
 
+        (string File, int Line) = DBJcore.FileLineInfo();
+
         DBJLog.debug(
-            "\n{2} : Compiler used to build {0} is: {1}\n", 
+            "\n(File:{3})(Line:{4})(Function:{2}) : Compiler used to build {0} is: {1}\n", 
             dll_name_, 
-            buf_.ToString() ?? "NULL" , 
-            DBJcore.Whoami()
+            new string(buf_) , 
+            DBJcore.Whoami(),
+            File,
+            Line
             );
     }
 
