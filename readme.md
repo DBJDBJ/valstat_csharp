@@ -1,6 +1,10 @@
 
  <h1>C# valstat implementation</h1>
 
+ > please be sure to use [winget for dot net sdk 7](https://learn.microsoft.com/en-us/dotnet/core/install/windows?WT.mc_id=dotnet-35129-website&tabs=net70#install-with-windows-package-manager-winget), management
+
+ <h3>Table of contents</h3>
+
 - [1. valstat protocol](#1-valstat-protocol)
 - [2. Motivation](#2-motivation)
 - [3. Implementation](#3-implementation)
@@ -12,11 +16,11 @@
 
 *As soon as we started programming, we found to our surprise that it wasn't as easy to get programs right as we had thought. Debugging had to be discovered. I can remember the exact instant when I realized that a large part of my life from then on was going to be spent in finding mistakes in my own programs.* —Maurice Wilkes discovers bugs, 1949 
 
-For inspiration you might [detour here](https://youtu.be/a1ye9eGTB98).
+For further inspiration you might [detour here](https://youtu.be/a1ye9eGTB98).
 
 ## 1. [valstat](https://github.com/DBJDBJ/valstat) protocol
 
- `valstat` is the language agnostic standard for light but sufficient passing of full response information back to the caller.
+ `valstat` is the language agnostic protocol for light but feasible passing of a full function response information back to the caller.
 
  Please read the full details in the valstat ["core document"](https://github.com/DBJDBJ/valstat). 
 
